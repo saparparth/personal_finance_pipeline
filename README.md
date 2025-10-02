@@ -1,4 +1,4 @@
-# personal_finance_pipeline
+# Personal finance Pipeline
 💳 Personal Finance ETL & Dashboard Project
 
 This project demonstrates an end-to-end ETL pipeline that:
