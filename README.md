@@ -1,25 +1,26 @@
-# Personal finance Pipeline
 💳 Personal Finance ETL & Dashboard Project
 
-This project demonstrates an end-to-end ETL pipeline that:
+An end-to-end Data Engineering & Analytics pipeline for tracking and analyzing personal finance.
 
-Fetches data from a Mock API (simulating bank transactions).
+This project demonstrates how to:
 
-Extracts, Transforms, and Loads (ETL) the data into PostgreSQL using Apache Airflow.
+🔗 Fetch data from a Mock API (simulating bank transactions)
 
-Connects PostgreSQL to Power BI for interactive dashboards and reporting.
+⚙️ ETL the data into PostgreSQL using Apache Airflow
+
+📊 Visualize & Analyze the data with Power BI
 
 🚀 Tech Stack
 
-Data Source: Mock API (REST)
+Data Source → Mock API (REST)
 
-ETL Orchestration: Apache Airflow
+Orchestration → Apache Airflow
 
-Database: PostgreSQL (running inside WSL2)
+Database → PostgreSQL (running inside WSL2)
 
-Analytics / Visualization: Power BI
+Visualization → Power BI
 
-Programming: Python (requests, pandas, pyspark for transformations)
+Programming → Python (requests, pandas, pyspark)
 
 📂 Project Structure
 personal_finance_project/
@@ -33,8 +34,8 @@ personal_finance_project/
 │   │   └── load.py              # Load into PostgreSQL
 │
 ├── data/
-│   └── raw/                     # Stores raw API responses
-     └── staging                 # stores proccesed data 
+│   ├── raw/                     # Stores raw API responses
+│   └── staging/                 # Stores processed data
 │
 ├── powerbi/
 │   └── finance_dashboard.pbix   # Power BI dashboard file
@@ -42,73 +43,55 @@ personal_finance_project/
 └── README.md
 
 ⚡ ETL Pipeline Flow
-🔹 1. Extract  
+🔹 1. Extract (extract.py)
 
-Script: extract.py
+Fetch transaction data from Mock API using requests
 
-Fetches transaction data from Mock API using requests.
+Store raw JSON responses under data/raw/ with timestamped filenames
 
-Stores raw JSON responses with timestamped filenames under data/raw/.
+🔹 2. Transform (transform.py)
 
-🔹 2. Transform
+Clean & enrich raw data:
 
-Script: transform.py
+Convert date & createdAt → proper datetime
 
-Cleans and enriches transaction data:
-
-Converts date & createdAt to proper datetime format.
-
-Derives new fields:
+Derive new fields:
 
 year, month
 
-transaction_type (Income/Expense based on type or amount).
+transaction_type → Income / Expense
 
-🔹 3. Load
+🔹 3. Load (load.py)
 
-Script: load.py
+Insert transformed data into PostgreSQL:
 
-Loads transformed data into PostgreSQL table:
+transactions(
+  accountId, amount, category, date, merchant,
+  transaction_type, year, month, createdAt
+)
 
-transactions(accountId, amount, category, date, merchant, transaction_type, year, month, createdAt)
+🔹 4. Visualization (Power BI)
 
-🔹 4. Visualization
+Connect Power BI directly to PostgreSQL
 
-Power BI connects directly to PostgreSQL.
+Create interactive dashboards
 
-Dashboards created for:
-
-Overview (KPIs: Total Income, Total Expense, Net Balance)
-
-Category Spend Breakdown
-
-Merchant Rankings
-
-Cashflow Trends (Monthly Income vs Expenses)
-
-Detailed Drill-Down Transactions
-
-📊 Power BI Report Strategy
-
-Page 1 – Overview
+📊 Power BI Dashboard Strategy
+📌 Page 1 – Overview
 
 Cards: Total Income, Total Expenses, Net Balance
 
-Line chart: Income vs Expense trend
+Line Chart: Income vs Expense trend
 
-Pie chart: Category-wise expense breakdown
+Pie Chart: Category-wise expense breakdown
 
-Page 2 – Trends & Comparison
+📌 Page 2 – Trends & Comparison
 
-Column chart: Monthly Income vs Expenses
+Column Chart: Monthly Income vs Expenses
 
-Stacked chart: Category spend over months
+Stacked Chart: Category spend over months
 
 Slicers: Year, Month, Transaction Type, Merchant
-
-![page1](https://github.com/user-attachments/assets/afe28dc0-3c56-4512-ba70-139965a8da87)
-![part2](https://github.com/user-attachments/assets/f9fbd105-9701-459f-b38b-97811f7edad5)
-
 
 🗄️ Database Schema
 1️⃣ accounts table
@@ -133,8 +116,8 @@ CREATE TABLE transactions (
     merchant_id INT REFERENCES merchants(merchant_id),
     amount NUMERIC(12,2) NOT NULL,
     currency VARCHAR(10) DEFAULT 'INR',
-    type VARCHAR(50),  -- deposit / withdrawal / payment / invoice
-    transaction_type VARCHAR(50),  -- Income / Expense
+    type VARCHAR(50),             -- deposit / withdrawal / payment / invoice
+    transaction_type VARCHAR(50), -- Income / Expense
     category VARCHAR(100),
     description TEXT,
     date DATE NOT NULL,
@@ -143,7 +126,7 @@ CREATE TABLE transactions (
     month INT
 );
 
-4️⃣ (Optional) users table (if multiple account holders)
+4️⃣ (Optional) users table
 CREATE TABLE users (
     user_id SERIAL PRIMARY KEY,
     full_name VARCHAR(255),
@@ -152,22 +135,27 @@ CREATE TABLE users (
 );
 
 
-Then link accounts.user_id → users.user_id.
+🔗 Link: accounts.user_id → users.user_id
 
 📊 Data Model (ERD)
-users (1) --- (M) accounts (1) --- (M) transactions (M) --- (1) merchants
+erDiagram
+    USERS ||--o{ ACCOUNTS : owns
+    ACCOUNTS ||--o{ TRANSACTIONS : has
+    TRANSACTIONS }o--|| MERCHANTS : "done at"
 
 
-One user can have multiple accounts.
+One user → many accounts
 
-One account can have multiple transactions.
+One account → many transactions
 
-Each transaction can be linked to one merchant.
+One transaction → linked to one merchant
 
-How This Fits in ETL
+🛠️ How This Fits in ETL
 
-Extract → Mock API gives JSON of transactions.
+Extract → Get JSON from Mock API
 
-Transform → Enrich fields (year, month, transaction_type).
+Transform → Add derived fields (year, month, transaction_type)
 
-Load → Write into PostgreSQL using above schema.
+Load → Insert into PostgreSQL schema
+
+Visualize → Power BI dashboards for financial insights
