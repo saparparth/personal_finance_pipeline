@@ -1,26 +1,25 @@
-# 💳 Personal Finance ETL & Dashboard Project  
+# 💳 Personal Finance ETL & Dashboard Project
 
-An **end-to-end Data Engineering & Analytics pipeline** for tracking and analyzing personal finance.  
+An **end-to-end Data Engineering & Analytics pipeline** for tracking and analyzing personal finance.
 
-This project demonstrates how to:  
-
-- 🔗 **Fetch** data from a Mock API (simulating bank transactions)  
-- ⚙️ **ETL** the data into **PostgreSQL** using **Apache Airflow**  
-- 📊 **Visualize & Analyze** the data with **Power BI**  
-
----
-
-## 🚀 Tech Stack  
-
-- **Data Source** → Mock API (REST)  
-- **Orchestration** → Apache Airflow  
-- **Database** → PostgreSQL (running inside WSL2)  
-- **Visualization** → Power BI  
-- **Programming** → Python (`requests`, `pandas`, `pyspark`)  
+This project demonstrates how to:
+- 🔗 **Fetch** data from a Mock API (simulating bank transactions)
+- ⚙️ **ETL** the data into **PostgreSQL** using **Apache Airflow**
+- 📊 **Visualize & Analyze** the data with **Power BI**
 
 ---
 
-## 📂 Project Structure  
+## 🚀 Tech Stack
+
+- **Data Source** → Mock API (REST)
+- **Orchestration** → Apache Airflow
+- **Database** → PostgreSQL (running inside WSL2)
+- **Visualization** → Power BI
+- **Programming** → Python (`requests`, `pandas`, `pyspark`)
+
+---
+
+## 📂 Project Structure
 
 ```bash
 personal_finance_project/
@@ -41,36 +40,32 @@ personal_finance_project/
 │   └── finance_dashboard.pbix   # Power BI dashboard file
 │
 └── README.md
-
-
-# 💰 Personal Finance ETL & Visualization
-
-This project demonstrates a full ETL pipeline for personal finance data.  
-Data is extracted from a **Mock API**, transformed with additional fields, loaded into **PostgreSQL**, and visualized with **Power BI** dashboards.
+```
 
 ---
 
-## 🔹 4. Visualization (Power BI)
+## 🔄 ETL Flow
 
-### 📊 Power BI Dashboard Strategy
+```mermaid
+flowchart LR
+    A[📥 Extract<br/>Mock API] --> B[🧹 Transform<br/>Clean & Enrich Data]
+    B --> C[🗄️ Load<br/>PostgreSQL Database]
+    C --> D[📊 Visualize<br/>Power BI Dashboards]
+```
 
-#### 📌 Page 1 – Overview
-- **Cards:** Total Income, Total Expenses, Net Balance  
-- **Line Chart:** Income vs Expense trend  
-- **Pie Chart:** Category-wise expense breakdown  
+### Pipeline Stages
 
-#### 📌 Page 2 – Trends & Comparison
-- **Column Chart:** Monthly Income vs Expenses  
-- **Stacked Chart:** Category spend over months  
-- **Slicers:** Year, Month, Transaction Type, Merchant  
+**🔹 Extract →** Fetch JSON data from the Mock API  
+**🔹 Transform →** Clean data & add derived fields (`year`, `month`, `transaction_type`)  
+**🔹 Load →** Insert the processed data into PostgreSQL schema  
+**🔹 Visualize →** Build interactive Power BI dashboards for financial insights
 
-![page1](https://github.com/user-attachments/assets/8fa709ee-5b2f-4900-906d-6158a8683166)
-![part2](https://github.com/user-attachments/assets/07e999bc-49a8-469d-af23-0cb95f6e978b)
 ---
 
-### 🗄️ Database Schema
+## 🗄️ Database Schema
 
-#### 1️⃣ accounts table
+### 1️⃣ accounts table
+
 ```sql
 CREATE TABLE accounts (
     account_id SERIAL PRIMARY KEY,
@@ -78,14 +73,21 @@ CREATE TABLE accounts (
     currency VARCHAR(10) DEFAULT 'INR',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+```
 
-#### 2️⃣ merchants table
+### 2️⃣ merchants table
+
+```sql
 CREATE TABLE merchants (
     merchant_id SERIAL PRIMARY KEY,
     merchant_name VARCHAR(255) NOT NULL,
     category VARCHAR(100)
 );
-#### 3️⃣ transactions table
+```
+
+### 3️⃣ transactions table
+
+```sql
 CREATE TABLE transactions (
     transaction_id SERIAL PRIMARY KEY,
     account_id INT REFERENCES accounts(account_id),
@@ -101,33 +103,134 @@ CREATE TABLE transactions (
     year INT,
     month INT
 );
+```
 
-#### 4️⃣ (Optional) users table
+### 4️⃣ users table (Optional)
+
+```sql
 CREATE TABLE users (
     user_id SERIAL PRIMARY KEY,
     full_name VARCHAR(255),
     email VARCHAR(255) UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-🔗 Relation: accounts.user_id → users.user_id
+```
 
-## 🛠️ How This Fits in ETL
-
-✨ The pipeline works in **four stages**:
-
-**🔹 Extract →** Fetch JSON data from the Mock API  
-**🔹 Transform →** Clean data & add derived fields (`year`, `month`, `transaction_type`)  
-**🔹 Load →** Insert the processed data into PostgreSQL schema  
-**🔹 Visualize →** Build interactive Power BI dashboards for financial insights  
+**🔗 Relation:** `accounts.user_id` → `users.user_id`
 
 ---
 
-### 🔄 ETL Flow Diagram
+## 📊 Power BI Dashboard Strategy
 
-```mermaid
-flowchart LR
-    A[📥 Extract<br/>Mock API] --> B[🧹 Transform<br/>Clean & Enrich Data]
-    B --> C[🗄️ Load<br/>PostgreSQL Database]
-    C --> D[📊 Visualize<br/>Power BI Dashboards]
+### 📌 Page 1 – Overview
 
+- **Cards:** Total Income, Total Expenses, Net Balance
+- **Line Chart:** Income vs Expense trend
+- **Pie Chart:** Category-wise expense breakdown
 
+### 📌 Page 2 – Trends & Comparison
+
+- **Column Chart:** Monthly Income vs Expenses
+- **Stacked Chart:** Category spend over months
+- **Slicers:** Year, Month, Transaction Type, Merchant
+
+### Dashboard Screenshots
+
+![page1](https://github.com/user-attachments/assets/acb85fbb-610c-43f6-ac6b-b6d20f757e8e)
+![part2](https://github.com/user-attachments/assets/e69975fe-9a57-4b9c-9ef5-09e8e0cd68b6)
+
+---
+
+## 🛠️ Setup & Installation
+
+### Prerequisites
+
+- Python 3.8+
+- PostgreSQL
+- Apache Airflow
+- Power BI Desktop
+- WSL2 (if running on Windows)
+
+### Installation Steps
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd personal_finance_project
+   ```
+
+2. **Set up Python environment**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   pip install -r requirements.txt
+   ```
+
+3. **Configure PostgreSQL**
+   ```bash
+   # Create database
+   createdb personal_finance
+   
+   # Run schema scripts
+   psql -d personal_finance -f schema.sql
+   ```
+
+4. **Set up Airflow**
+   ```bash
+   export AIRFLOW_HOME=~/airflow
+   airflow db init
+   airflow users create --username admin --password admin --firstname Admin --lastname User --role Admin --email admin@example.com
+   ```
+
+5. **Start Airflow services**
+   ```bash
+   airflow webserver -p 8080
+   airflow scheduler
+   ```
+
+---
+
+## 🎯 Features
+
+- ✅ Automated data extraction from Mock API
+- ✅ Data transformation with derived metrics
+- ✅ Normalized database schema with referential integrity
+- ✅ Scheduled ETL pipeline using Airflow
+- ✅ Interactive Power BI dashboards
+- ✅ Real-time financial insights and trends
+
+---
+
+## 📈 Future Enhancements
+
+- 🔮 Add predictive analytics for expense forecasting
+- 🌐 Integrate with real banking APIs
+- 📱 Create mobile-friendly dashboards
+- 🔔 Implement budget alerts and notifications
+- 🤖 Add machine learning for anomaly detection
+
+---
+
+## 📝 License
+
+This project is licensed under the MIT License.
+
+---
+
+## 👤 Author
+
+**Your Name**  
+📧 Email: your.email@example.com  
+🔗 LinkedIn: [Your Profile](https://linkedin.com/in/yourprofile)  
+💻 GitHub: [Your GitHub](https://github.com/yourusername)
+
+---
+
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome!  
+Feel free to check the [issues page](link-to-issues).
+
+---
+
+⭐ **If you found this project helpful, please give it a star!** ⭐
