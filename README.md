@@ -43,14 +43,14 @@ personal_finance_project/
 └── README.md
 
 
-⚡ ETL Pipeline Flow
-🔹 1. Extract (extract.py)
+## ⚡ ETL Pipeline Flow
+**🔹 1. Extract (extract.py)**
 
 Fetch transaction data from Mock API using requests
 
 Store raw JSON responses under data/raw/ with timestamped filenames
 
-🔹 2. Transform (transform.py)
+**🔹 2. Transform (transform.py)**
 
 Clean & enrich raw data:
 
@@ -62,7 +62,7 @@ year, month
 
 transaction_type → Income / Expense
 
-🔹 3. Load (load.py)
+**🔹 3. Load (load.py)**
 
 Insert transformed data into PostgreSQL:
 
@@ -71,14 +71,14 @@ transactions(
   transaction_type, year, month, createdAt
 )
 
-🔹 4. Visualization (Power BI)
+**🔹 4. Visualization (Power BI)**
 
 Connect Power BI directly to PostgreSQL
 
 Create interactive dashboards
 
-📊 Power BI Dashboard Strategy
-📌 Page 1 – Overview
+## 📊 Power BI Dashboard Strategy
+**📌 Page 1 – Overview**
 
 Cards: Total Income, Total Expenses, Net Balance
 
@@ -86,7 +86,7 @@ Line Chart: Income vs Expense trend
 
 Pie Chart: Category-wise expense breakdown
 
-📌 Page 2 – Trends & Comparison
+**📌 Page 2 – Trends & Comparison**
 
 Column Chart: Monthly Income vs Expenses
 
@@ -94,8 +94,8 @@ Stacked Chart: Category spend over months
 
 Slicers: Year, Month, Transaction Type, Merchant
 
-🗄️ Database Schema
-1️⃣ accounts table
+## 🗄️ Database Schema
+**1️⃣ accounts table**
 CREATE TABLE accounts (
     account_id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -103,14 +103,14 @@ CREATE TABLE accounts (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-2️⃣ merchants table
+**2️⃣ merchants table**
 CREATE TABLE merchants (
     merchant_id SERIAL PRIMARY KEY,
     merchant_name VARCHAR(255) NOT NULL,
     category VARCHAR(100)
 );
 
-3️⃣ transactions table
+**3️⃣ transactions table**
 CREATE TABLE transactions (
     transaction_id SERIAL PRIMARY KEY,
     account_id INT REFERENCES accounts(account_id),
@@ -127,7 +127,7 @@ CREATE TABLE transactions (
     month INT
 );
 
-4️⃣ (Optional) users table
+**4️⃣ (Optional) users table**
 CREATE TABLE users (
     user_id SERIAL PRIMARY KEY,
     full_name VARCHAR(255),
@@ -136,27 +136,27 @@ CREATE TABLE users (
 );
 
 
-🔗 Link: accounts.user_id → users.user_id
+##🔗 Link: accounts.user_id → users.user_id
 
-📊 Data Model (ERD)
-erDiagram
+##📊 Data Model (ERD)
+**erDiagram**
     USERS ||--o{ ACCOUNTS : owns
     ACCOUNTS ||--o{ TRANSACTIONS : has
     TRANSACTIONS }o--|| MERCHANTS : "done at"
 
 
-One user → many accounts
+**One user → many accounts**
 
-One account → many transactions
+**One account → many transactions**
 
-One transaction → linked to one merchant
+**One transaction → linked to one merchant**
 
-🛠️ How This Fits in ETL
+## 🛠️ How This Fits in ETL
 
-Extract → Get JSON from Mock API
+**Extract → Get JSON from Mock API**
 
-Transform → Add derived fields (year, month, transaction_type)
+**Transform → Add derived fields (year, month, transaction_type)**
 
-Load → Insert into PostgreSQL schema
+**Load → Insert into PostgreSQL schema**
 
-Visualize → Power BI dashboards for financial insights
+**Visualize → Power BI dashboards for financial insights**
