@@ -43,59 +43,35 @@ personal_finance_project/
 └── README.md
 
 
-## ⚡ ETL Pipeline Flow
-**🔹 1. Extract (extract.py)**
+# 💰 Personal Finance ETL & Visualization
 
-Fetch transaction data from Mock API using requests
+This project demonstrates a full ETL pipeline for personal finance data.  
+Data is extracted from a **Mock API**, transformed with additional fields, loaded into **PostgreSQL**, and visualized with **Power BI** dashboards.
 
-Store raw JSON responses under data/raw/ with timestamped filenames
+---
 
-**🔹 2. Transform (transform.py)**
+## 🔹 4. Visualization (Power BI)
 
-Clean & enrich raw data:
+### 📊 Power BI Dashboard Strategy
 
-Convert date & createdAt → proper datetime
+#### 📌 Page 1 – Overview
+- **Cards:** Total Income, Total Expenses, Net Balance  
+- **Line Chart:** Income vs Expense trend  
+- **Pie Chart:** Category-wise expense breakdown  
 
-Derive new fields:
+#### 📌 Page 2 – Trends & Comparison
+- **Column Chart:** Monthly Income vs Expenses  
+- **Stacked Chart:** Category spend over months  
+- **Slicers:** Year, Month, Transaction Type, Merchant  
 
-year, month
+![page1](https://github.com/user-attachments/assets/8fa709ee-5b2f-4900-906d-6158a8683166)
+![part2](https://github.com/user-attachments/assets/07e999bc-49a8-469d-af23-0cb95f6e978b)
+---
 
-transaction_type → Income / Expense
+### 🗄️ Database Schema
 
-**🔹 3. Load (load.py)**
-
-Insert transformed data into PostgreSQL:
-
-transactions(
-  accountId, amount, category, date, merchant,
-  transaction_type, year, month, createdAt
-)
-
-**🔹 4. Visualization (Power BI)**
-
-Connect Power BI directly to PostgreSQL
-
-Create interactive dashboards
-
-## 📊 Power BI Dashboard Strategy
-**📌 Page 1 – Overview**
-
-Cards: Total Income, Total Expenses, Net Balance
-
-Line Chart: Income vs Expense trend
-
-Pie Chart: Category-wise expense breakdown
-
-**📌 Page 2 – Trends & Comparison**
-
-Column Chart: Monthly Income vs Expenses
-
-Stacked Chart: Category spend over months
-
-Slicers: Year, Month, Transaction Type, Merchant
-
-## 🗄️ Database Schema
-**1️⃣ accounts table**
+#### 1️⃣ accounts table
+```sql
 CREATE TABLE accounts (
     account_id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -103,14 +79,13 @@ CREATE TABLE accounts (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-**2️⃣ merchants table**
+#### 2️⃣ merchants table
 CREATE TABLE merchants (
     merchant_id SERIAL PRIMARY KEY,
     merchant_name VARCHAR(255) NOT NULL,
     category VARCHAR(100)
 );
-
-**3️⃣ transactions table**
+#### 3️⃣ transactions table
 CREATE TABLE transactions (
     transaction_id SERIAL PRIMARY KEY,
     account_id INT REFERENCES accounts(account_id),
@@ -127,36 +102,32 @@ CREATE TABLE transactions (
     month INT
 );
 
-**4️⃣ (Optional) users table**
+#### 4️⃣ (Optional) users table
 CREATE TABLE users (
     user_id SERIAL PRIMARY KEY,
     full_name VARCHAR(255),
     email VARCHAR(255) UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
-
-##🔗 Link: accounts.user_id → users.user_id
-
-##📊 Data Model (ERD)
-**erDiagram**
-    USERS ||--o{ ACCOUNTS : owns
-    ACCOUNTS ||--o{ TRANSACTIONS : has
-    TRANSACTIONS }o--|| MERCHANTS : "done at"
-
-
-**One user → many accounts**
-
-**One account → many transactions**
-
-**One transaction → linked to one merchant**
+🔗 Relation: accounts.user_id → users.user_id
 
 ## 🛠️ How This Fits in ETL
 
-**Extract → Get JSON from Mock API**
+✨ The pipeline works in **four stages**:
 
-**Transform → Add derived fields (year, month, transaction_type)**
+**🔹 Extract →** Fetch JSON data from the Mock API  
+**🔹 Transform →** Clean data & add derived fields (`year`, `month`, `transaction_type`)  
+**🔹 Load →** Insert the processed data into PostgreSQL schema  
+**🔹 Visualize →** Build interactive Power BI dashboards for financial insights  
 
-**Load → Insert into PostgreSQL schema**
+---
 
-**Visualize → Power BI dashboards for financial insights**
+### 🔄 ETL Flow Diagram
+
+```mermaid
+flowchart LR
+    A[📥 Extract<br/>Mock API] --> B[🧹 Transform<br/>Clean & Enrich Data]
+    B --> C[🗄️ Load<br/>PostgreSQL Database]
+    C --> D[📊 Visualize<br/>Power BI Dashboards]
+
+
